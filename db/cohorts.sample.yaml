@@ -1,0 +1,17 @@
+cohorts:
+  algebra 101:
+    - name: Guy Smiley
+      count: 0
+    - name: Big Bird
+      count: 1
+    - name: Zoe
+      count: 1
+    - name: Oscar Grouch
+      count: 0
+  geometry 201:
+    - name: Albert Einstein
+      count: 1
+    - name: Annie Jump Cannon
+      count: 0
+    - name: Niels Bohr
+      count: 0
