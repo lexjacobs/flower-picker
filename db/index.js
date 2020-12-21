@@ -1,28 +1,30 @@
-var fs = require('fs');
-var path = require('path');
-var yaml = require('js-yaml');
-var _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
+const yaml = require('js-yaml');
+const _ = require('lodash');
+const cohortYaml = path.join(__dirname, 'cohorts.yaml');
+const sampleCohortYaml = path.join(__dirname, 'cohorts.sample.yaml');
 
 var activeCohort = '';
-var activeCohortCount = 0;
+var activeStudentCount = 0;
 var activeCohortData = [];
-var data;
+var allCohortData = {};
 
 var readYaml = function () {
   // upon first run, may not be a list of students
   // default to sample file, which is in git
-  if (!fs.existsSync(path.join(__dirname, 'cohorts.yaml')) && fs.existsSync(path.join(__dirname, 'cohorts.yaml.bak'))) {
-    fs.copyFileSync(path.join(__dirname, 'cohorts.sample.yaml'), path.join(__dirname, 'cohorts.yaml'));
+  if (!fs.existsSync(cohortYaml) && fs.existsSync(sampleCohortYaml)) {
+    fs.copyFileSync(sampleCohortYaml, cohortYaml);
   }
   // load from yaml into memory
-  var fileContents = fs.readFileSync(path.join(__dirname, 'cohorts.yaml'), 'utf8');
-  data = yaml.safeLoad(fileContents);
+  var fileContents = fs.readFileSync(cohortYaml, 'utf8');
+  allCohortData = yaml.safeLoad(fileContents);
   writeYaml();
 };
 
 var writeYaml = function () {
-  let yamlDump = yaml.safeDump(data);
-  fs.writeFile(path.join(__dirname, 'cohorts.yaml'), yamlDump, 'utf8', function (err) {
+  let yamlDump = yaml.safeDump(allCohortData);
+  fs.writeFile(cohortYaml, yamlDump, 'utf8', function (err) {
     if (err) {
       throw ('something broke in writeYaml');
     }
@@ -30,7 +32,7 @@ var writeYaml = function () {
 };
 
 var updateCount = function (nextName) {
-  var currentCohort = data.cohorts[activeCohort];
+  var currentCohort = allCohortData.cohorts[activeCohort];
   // change 0 to 1
   currentCohort = currentCohort.map(x => {
     if (x.name === nextName) {
@@ -54,9 +56,9 @@ var updateCount = function (nextName) {
 }
 
 orderSelectedStudents = function () {
-  activeCohortCount = 0;
+  activeStudentCount = 0;
 
-  activeCohortData = data.cohorts[activeCohort].slice();
+  activeCohortData = allCohortData.cohorts[activeCohort].slice();
 
   let groupedData = _.groupBy(activeCohortData, function (x) {
     return x.count === 0;
@@ -70,7 +72,7 @@ orderSelectedStudents = function () {
 };
 
 exports.listCohorts = function () {
-  return Object.keys(data.cohorts);
+  return Object.keys(allCohortData.cohorts);
 }
 
 exports.setCohort = function (cohort) {
@@ -79,7 +81,7 @@ exports.setCohort = function (cohort) {
 }
 
 exports.getName = function () {
-  let nextName = activeCohortData[activeCohortCount++ % activeCohortData.length].name;
+  let nextName = activeCohortData[activeStudentCount++ % activeCohortData.length].name;
   updateCount(nextName);
   writeYaml();
   return nextName;
