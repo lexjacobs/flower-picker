@@ -14,6 +14,7 @@ var readYaml = function () {
   // upon first run, may not be a list of students
   // default to sample file, which is in git
   if (!fs.existsSync(cohortYaml) && fs.existsSync(sampleCohortYaml)) {
+    console.log(`👀 No student list found. Loading default list. Edit ${cohortYaml} 👀`);
     fs.copyFileSync(sampleCohortYaml, cohortYaml);
   }
   // load from yaml into memory
@@ -67,7 +68,6 @@ orderSelectedStudents = function () {
   // always put the students who haven't been called on recently first
   let shuffledData = _.shuffle(groupedData[true]).concat(_.shuffle(groupedData[false]));
 
-  console.log(`shuffleddata ${JSON.stringify(shuffledData)}`);
   activeCohortData = shuffledData;
 };
 
