@@ -2,6 +2,10 @@ const { app, Menu, Tray } = require('electron')
 const { initDb, getName, listCohorts, setCohort } = require('./db');
 let tray = null;
 
+var quitApp = function () {
+  process.exit(0);
+}
+
 var buildInitialMenu = function () {
 
   var handleCohortSelection = function (menuItem) {
@@ -13,7 +17,7 @@ var buildInitialMenu = function () {
 
     var initialMenuChoices = listCohorts().map(cohort => {
       return { label: cohort, type: 'normal', click: handleCohortSelection }
-    })
+    }).concat({type: 'separator'}, { label: 'quit app', type: 'normal', click: quitApp })
 
     var contextMenu = Menu.buildFromTemplate(initialMenuChoices);
     tray.setToolTip('Click to set cohort');
@@ -26,20 +30,18 @@ var buildInitialMenu = function () {
 };
 
 var setNewName = function (menuItem) {
-
-  var name = getName(function (err, name) {
-    if (err) {
-      throw('err in setNewName');
-    } else {
-      contextMenu = Menu.buildFromTemplate([
-        { label: `click to select new name`, type: 'normal', click: setNewName },
-        { label: 'pick new cohort', type: 'normal', click: buildInitialMenu }
-      ])
-      tray.setContextMenu(contextMenu);
-      tray.setTitle(name, {
-        fontType: "monospacedDigit"
-      });
-    }
+  getName(function (name) {
+    contextMenu = Menu.buildFromTemplate([
+      { label: `select new name`, type: 'normal', click: setNewName },
+      { type: 'separator' },
+      { label: 'pick new cohort', type: 'normal', click: buildInitialMenu },
+      { type: 'separator' },
+      { label: 'quit app', type: 'normal', click: quitApp }
+    ])
+    tray.setContextMenu(contextMenu);
+    tray.setTitle(name, {
+      fontType: "monospacedDigit"
+    });
   });
 }
 
