@@ -10,10 +10,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "electron": "11.1.0"
-  },
+  "devDependencies": {},
   "dependencies": {
+    "electron": "11.1.0",
     "js-yaml": "^3.14.1",
     "lodash": "^4.17.20"
   }
