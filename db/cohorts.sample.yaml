@@ -1,17 +1,20 @@
+# start with cohorts
 cohorts:
+# this is the class/group name
   algebra 101:
+# don't forgert the dash next to name
     - name: Guy Smiley
-      count: 0
+      recentPick: false
     - name: Big Bird
-      count: 1
+      recentPick: true
     - name: Zoe
-      count: 1
+      recentPick: true
     - name: Oscar Grouch
-      count: 0
+      recentPick: false
   geometry 201:
     - name: Albert Einstein
-      count: 1
+      recentPick: true
     - name: Annie Jump Cannon
-      count: 0
+      recentPick: false
     - name: Niels Bohr
-      count: 0
+      recentPick: false

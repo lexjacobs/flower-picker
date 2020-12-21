@@ -34,24 +34,24 @@ var writeYaml = function () {
 
 var updateCount = function (nextName) {
   var currentCohort = allCohortData.cohorts[activeCohort];
-  // change 0 to 1
-  currentCohort = currentCohort.map(x => {
-    if (x.name === nextName) {
-      if (x.count === 0) {
-        x.count = 1;
+  // change false to true
+  currentCohort = currentCohort.map(person => {
+    if (person.name === nextName) {
+      if (person.recentPick === false) {
+        person.recentPick = true;
       }
     }
-    return x;
+    return person;
   });
 
-  // if everyone is a 1, now they're all 0s again
-  if (_.some(currentCohort, function (item) {
-    return item.count === 0;
+  // if everyone was recently picked, now they're all reset
+  if (_.some(currentCohort, function (person) {
+    return person.recentPick === false;
   })) {
     return;
   } else {
-    currentCohort = currentCohort.map(x => {
-      x.count = 0;
+    currentCohort = currentCohort.map(person => {
+      person.recentPick = false;
     });
   }
 }
@@ -61,11 +61,11 @@ orderSelectedStudents = function () {
 
   activeCohortData = allCohortData.cohorts[activeCohort].slice();
 
-  let groupedData = _.groupBy(activeCohortData, function (x) {
-    return x.count === 0;
+  let groupedData = _.groupBy(activeCohortData, function (person) {
+    return person.recentPick === false;
   });
 
-  // always put the students who haven't been called on recently first
+  // always put the students who aren't a recentPick first
   let shuffledData = _.shuffle(groupedData[true]).concat(_.shuffle(groupedData[false]));
 
   activeCohortData = shuffledData;
