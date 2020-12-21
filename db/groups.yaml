@@ -1,0 +1,17 @@
+groups:
+  algebra 101:
+    - name: Guy Smiley
+      recentPick: true
+    - name: Big Bird
+      recentPick: true
+    - name: Zoe
+      recentPick: true
+    - name: Oscar Grouch
+      recentPick: false
+  AP physics:
+    - name: Albert Einstein
+      recentPick: false
+    - name: Annie Jump Cannon
+      recentPick: false
+    - name: Niels Bohr
+      recentPick: true

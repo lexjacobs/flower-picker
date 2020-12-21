@@ -1,8 +1,10 @@
-# start with cohorts
-cohorts:
+# start with "groups"
+groups:
 # this is the class/group name
+# remember to inden)
   algebra 101:
-# don't forgert the dash next to name
+# don't forget the dash next to each name
+# notice the indentation again
     - name: Guy Smiley
       recentPick: false
     - name: Big Bird
@@ -11,10 +13,10 @@ cohorts:
       recentPick: true
     - name: Oscar Grouch
       recentPick: false
-  geometry 201:
+  AP physics:
     - name: Albert Einstein
       recentPick: true
     - name: Annie Jump Cannon
       recentPick: false
     - name: Niels Bohr
-      recentPick: false
+      recentPick: true

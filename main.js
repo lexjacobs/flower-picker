@@ -1,5 +1,5 @@
 const { app, Menu, Tray } = require('electron')
-const { initDb, getName, listCohorts, setCohort } = require('./db');
+const { initDb, getName, listGroups, setGroup } = require('./db');
 let tray = null;
 
 var quitApp = function () {
@@ -8,21 +8,21 @@ var quitApp = function () {
 
 var buildInitialMenu = function () {
 
-  var handleCohortSelection = function (menuItem) {
-    setCohort(menuItem.label);
+  var handleGroupSelection = function (menuItem) {
+    setGroup(menuItem.label);
     setNewName();
   }
 
   initDb(function () {
 
-    var initialMenuChoices = listCohorts().map(cohort => {
-      return { label: cohort, type: 'normal', click: handleCohortSelection }
+    var initialMenuChoices = listGroups().map(group => {
+      return { label: group, type: 'normal', click: handleGroupSelection }
     }).concat({type: 'separator'}, { label: 'quit app', type: 'normal', click: quitApp })
 
     var contextMenu = Menu.buildFromTemplate(initialMenuChoices);
-    tray.setToolTip('Click to set cohort');
+    tray.setToolTip('Click to set group');
     tray.setContextMenu(contextMenu);
-    tray.setTitle('pick cohort', {
+    tray.setTitle('pick group', {
       fontType: "monospacedDigit"
     });
   })
@@ -34,7 +34,7 @@ var setNewName = function (menuItem) {
     contextMenu = Menu.buildFromTemplate([
       { label: `select new name`, type: 'normal', click: setNewName },
       { type: 'separator' },
-      { label: 'pick new cohort', type: 'normal', click: buildInitialMenu },
+      { label: 'pick new group', type: 'normal', click: buildInitialMenu },
       { type: 'separator' },
       { label: 'quit app', type: 'normal', click: quitApp }
     ])
@@ -48,6 +48,6 @@ var setNewName = function (menuItem) {
 app.whenReady().then(() => {
   console.log(`App running in menu bar. Click to interact 🚀`);
 
-  tray = new Tray('./flower.png', '14e25de8-22f5-447d-900a-bb415c3d5459');
+  tray = new Tray('./flower.png', 'd3392b5f-4037-494e-b49a-48d2a80cd656');
   buildInitialMenu();
 });

@@ -2,14 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const _ = require('lodash');
-const { sample } = require('lodash');
-const cohortYaml = path.join(__dirname, 'cohorts.yaml');
-const sampleCohortYaml = path.join(__dirname, 'cohorts.sample.yaml');
+const groupsYaml = path.join(__dirname, 'groups.yaml');
+const sampleGroupsYaml = path.join(__dirname, 'groups.sample.yaml');
 
-var activeCohort = '';
-var activeStudentCount = 0;
-var activeCohortData = [];
-var allCohortData = {};
+var activeGroup = '';
+var activeNameCount = 0;
+var activeGroupData = [];
+var allGroupData = {};
 
 var fileExists = function (path) {
   return fs.existsSync(path);
@@ -38,9 +37,9 @@ var writeYaml = function (data, filePath, cb) {
 }
 
 var updateCount = function (nextName) {
-  var currentCohort = allCohortData.cohorts[activeCohort];
+  var currentGroup = allGroupData.groups[activeGroup];
   // change false to true
-  currentCohort = currentCohort.map(person => {
+  currentGroup = currentGroup.map(person => {
     if (person.name === nextName) {
       if (person.recentPick === false) {
         person.recentPick = true;
@@ -50,46 +49,46 @@ var updateCount = function (nextName) {
   });
 
   // if everyone was recently picked, now they're all reset
-  if (_.some(currentCohort, function (person) {
+  if (_.some(currentGroup, function (person) {
     return person.recentPick === false;
   })) {
     return;
   } else {
-    currentCohort = currentCohort.map(person => {
+    currentGroup = currentGroup.map(person => {
       person.recentPick = false;
     });
   }
 }
 
 orderSelectedStudents = function () {
-  activeStudentCount = 0;
+  activeNameCount = 0;
 
-  activeCohortData = allCohortData.cohorts[activeCohort].slice();
+  activeGroupData = allGroupData.groups[activeGroup].slice();
 
-  let groupedData = _.groupBy(activeCohortData, function (person) {
+  let groupedData = _.groupBy(activeGroupData, function (person) {
     return person.recentPick === false;
   });
 
   // always put the students who aren't a recentPick first
   let shuffledData = _.shuffle(groupedData[true]).concat(_.shuffle(groupedData[false]));
 
-  activeCohortData = shuffledData;
+  activeGroupData = shuffledData;
 };
 
-exports.listCohorts = function () {
-  return Object.keys(allCohortData.cohorts);
+exports.listGroups = function () {
+  return Object.keys(allGroupData.groups);
 }
 
-exports.setCohort = function (cohort) {
-  activeCohort = cohort;
+exports.setGroup = function (group) {
+  activeGroup = group;
   orderSelectedStudents();
 }
 
 exports.getName = function (cb) {
-  let nextName = activeCohortData[activeStudentCount++ % activeCohortData.length].name;
+  let nextName = activeGroupData[activeNameCount++ % activeGroupData.length].name;
   updateCount(nextName);
   cb(nextName);
-  writeYaml(allCohortData, cohortYaml, function (err) {
+  writeYaml(allGroupData, groupsYaml, function (err) {
     if (err) {
       throw (err);
     }
@@ -98,20 +97,20 @@ exports.getName = function (cb) {
 
 // initialize in-memory data
 exports.initDb = function (cb) {
-  var readSource = cohortYaml;
-  if (!fileExists(cohortYaml) && fileExists(sampleCohortYaml)) {
-    console.log(`👀 No student list found. Loading sample list. Edit ${cohortYaml} 👀`);
-    readSource = sampleCohortYaml;
+  var readSource = groupsYaml;
+  if (!fileExists(groupsYaml) && fileExists(sampleGroupsYaml)) {
+    console.log(`👀 No groups data found. Loading sample data. Edit ${groupsYaml} 👀`);
+    readSource = sampleGroupsYaml;
   }
   readYaml(readSource, function (err, data) {
     if (err) {
-      throw ('error reading sample cohort yaml');
+      throw ('error reading sample groups yaml');
     } else {
-      allCohortData = data;
+      allGroupData = data;
       cb();
-      writeYaml(allCohortData, cohortYaml, function (err) {
+      writeYaml(allGroupData, groupsYaml, function (err) {
         if (err) {
-          throw (`error writing yaml to ${cohortYaml}`);
+          throw (`error writing yaml to ${groupsYaml}`);
         }
       });
     }
