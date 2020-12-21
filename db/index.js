@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const _ = require('lodash');
+const { sample } = require('lodash');
 const cohortYaml = path.join(__dirname, 'cohorts.yaml');
 const sampleCohortYaml = path.join(__dirname, 'cohorts.sample.yaml');
 
@@ -10,27 +11,40 @@ var activeStudentCount = 0;
 var activeCohortData = [];
 var allCohortData = {};
 
-var readYaml = function () {
-  // upon first run, may not be a list of students
-  // default to sample file, which is in git
-  if (!fs.existsSync(cohortYaml) && fs.existsSync(sampleCohortYaml)) {
-    console.log(`👀 No student list found. Loading default list. Edit ${cohortYaml} 👀`);
-    fs.copyFileSync(sampleCohortYaml, cohortYaml);
-  }
-  // load from yaml into memory
-  var fileContents = fs.readFileSync(cohortYaml, 'utf8');
-  allCohortData = yaml.safeLoad(fileContents);
-  writeYaml();
-};
+var fileExists = function (path) {
+  return fs.existsSync(path);
+}
 
-var writeYaml = function () {
-  let yamlDump = yaml.safeDump(allCohortData);
-  fs.writeFile(cohortYaml, yamlDump, 'utf8', function (err) {
+var readYaml = function (filePath, cb) {
+  // load from yaml into memory
+  var fileContents = fs.readFile(filePath, 'utf8', function (err, data) {
     if (err) {
-      throw ('something broke in writeYaml');
+      cb(err);
+    } else {
+      // return in-memory object
+      cb(null, yaml.safeLoad(data));
     }
   });
 };
+
+var writeYaml = function (data, filePath, cb) {
+  fs.writeFile(filePath, yaml.safeDump(data), 'utf8', function (err) {
+    if (err) {
+      cb(err);
+    } else {
+      cb(null, true);
+    }
+  });
+}
+
+// var writeYaml = function () {
+//   let yamlDump = yaml.safeDump(allCohortData);
+//   fs.writeFile(cohortYaml, yamlDump, 'utf8', function (err) {
+//     if (err) {
+//       throw ('something broke in writeYaml');
+//     }
+//   });
+// };
 
 var updateCount = function (nextName) {
   var currentCohort = allCohortData.cohorts[activeCohort];
@@ -80,11 +94,38 @@ exports.setCohort = function (cohort) {
   orderSelectedStudents();
 }
 
-exports.getName = function () {
+exports.getName = function (cb) {
   let nextName = activeCohortData[activeStudentCount++ % activeCohortData.length].name;
   updateCount(nextName);
-  writeYaml();
-  return nextName;
+  writeYaml(allCohortData, cohortYaml, function(err) {
+    if (err) {
+      cb(err);
+    } else {
+      cb(null, nextName);
+    }
+  });
 };
 
-readYaml();
+// initialize in-memory data
+exports.initDb = function (cb) {
+  var readSource = cohortYaml;
+  if (!fileExists(cohortYaml) && fileExists(sampleCohortYaml)) {
+    console.log(`👀 No student list found. Loading sample list. Edit ${cohortYaml} 👀`);
+    readSource = sampleCohortYaml;
+  }
+  readYaml(readSource, function (err, data) {
+    if (err) {
+      throw ('error reading sample cohort yaml');
+    } else {
+      allCohortData = data;
+      writeYaml(allCohortData, cohortYaml, function (err) {
+        if (err) {
+          throw (`error writing yaml to ${cohortYaml}`);
+        } else {
+          cb();
+        }
+      });
+    }
+  });
+
+};
