@@ -37,15 +37,6 @@ var writeYaml = function (data, filePath, cb) {
   });
 }
 
-// var writeYaml = function () {
-//   let yamlDump = yaml.safeDump(allCohortData);
-//   fs.writeFile(cohortYaml, yamlDump, 'utf8', function (err) {
-//     if (err) {
-//       throw ('something broke in writeYaml');
-//     }
-//   });
-// };
-
 var updateCount = function (nextName) {
   var currentCohort = allCohortData.cohorts[activeCohort];
   // change false to true
@@ -97,11 +88,10 @@ exports.setCohort = function (cohort) {
 exports.getName = function (cb) {
   let nextName = activeCohortData[activeStudentCount++ % activeCohortData.length].name;
   updateCount(nextName);
-  writeYaml(allCohortData, cohortYaml, function(err) {
+  cb(nextName);
+  writeYaml(allCohortData, cohortYaml, function (err) {
     if (err) {
-      cb(err);
-    } else {
-      cb(null, nextName);
+      throw (err);
     }
   });
 };
@@ -118,11 +108,10 @@ exports.initDb = function (cb) {
       throw ('error reading sample cohort yaml');
     } else {
       allCohortData = data;
+      cb();
       writeYaml(allCohortData, cohortYaml, function (err) {
         if (err) {
           throw (`error writing yaml to ${cohortYaml}`);
-        } else {
-          cb();
         }
       });
     }
