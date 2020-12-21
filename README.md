@@ -3,6 +3,14 @@
 
 This node script adds a clickable tool to your menu bar that allows you to randomly select a value from a list.
 
+![initial view](screenshots/1.png)
+
+![picking group](screenshots/2.png)
+
+![name appears](screenshots/3.png)
+
+![picking new name or group in menu](screenshots/4.png)
+
 Recommended for a teacher or facilitator in an online setting to be able to randomly call on someone. Perfect for remote educators. Uses electron.js . Tested only on OSX (so far).
 
 ## Features
