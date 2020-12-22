@@ -35,6 +35,8 @@ Recommended for a teacher or facilitator in an online setting to be able to rand
 - The first time you run the app, you should hold down ⌘ and click/drag the flower icon to the right side of your menubar. This will ensure the names are visible when using an app with many menu items that might cover over some of the menubar icons.
 - The next time you start, this position should be remembered by the OS.
 - The rest is fairly self-explanitory
+## Caveat
+- If you want your participants to see the picker app in their menu bar and are using Zoom for screen sharing, you will need to share a "Desktop". Otherwise, when sharing just the current app window, the menu bar won't be visible to others. 
 
 ## FAQ
 Q: When do the names shuffle, and how are they ordered?
