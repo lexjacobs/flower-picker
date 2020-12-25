@@ -10,13 +10,13 @@ var activeNameCount = 0;
 var activeGroupData = [];
 var allGroupData = {};
 
-var fileExists = function (path) {
+var fileExists = (path) => {
   return fs.existsSync(path);
-}
+};
 
-var readYaml = function (filePath, cb) {
+var readYaml = (filePath, cb) => {
   // load from yaml into memory
-  var fileContents = fs.readFile(filePath, 'utf8', function (err, data) {
+  fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       cb(err);
     } else {
@@ -26,17 +26,17 @@ var readYaml = function (filePath, cb) {
   });
 };
 
-var writeYaml = function (data, filePath, cb) {
-  fs.writeFile(filePath, yaml.safeDump(data), 'utf8', function (err) {
+var writeYaml = (data, filePath, cb) => {
+  fs.writeFile(filePath, yaml.safeDump(data), 'utf8', (err) => {
     if (err) {
       cb(err);
     } else {
       cb(null, true);
     }
   });
-}
+};
 
-var updateCount = function (nextName) {
+var updateCount = (nextName) => {
   var currentGroup = allGroupData.groups[activeGroup];
   // change false to true
   currentGroup = currentGroup.map(person => {
@@ -49,7 +49,7 @@ var updateCount = function (nextName) {
   });
 
   // if everyone was recently picked, now they're all reset
-  if (_.some(currentGroup, function (person) {
+  if (_.some(currentGroup, (person) => {
     return person.recentPick === false;
   })) {
     return;
@@ -58,14 +58,14 @@ var updateCount = function (nextName) {
       person.recentPick = false;
     });
   }
-}
+};
 
-orderSelectedStudents = function () {
+var orderSelectedStudents = () => {
   activeNameCount = 0;
 
   activeGroupData = allGroupData.groups[activeGroup].slice();
 
-  let groupedData = _.groupBy(activeGroupData, function (person) {
+  let groupedData = _.groupBy(activeGroupData, (person) => {
     return person.recentPick === false;
   });
 
@@ -75,20 +75,20 @@ orderSelectedStudents = function () {
   activeGroupData = shuffledData;
 };
 
-exports.listGroups = function () {
+exports.listGroups = () => {
   return Object.keys(allGroupData.groups);
-}
+};
 
-exports.setGroup = function (group) {
+exports.setGroup = (group) => {
   activeGroup = group;
   orderSelectedStudents();
-}
+};
 
-exports.getName = function (cb) {
+exports.getName = (cb) => {
   let nextName = activeGroupData[activeNameCount++ % activeGroupData.length].name;
   updateCount(nextName);
   cb(nextName);
-  writeYaml(allGroupData, groupsYaml, function (err) {
+  writeYaml(allGroupData, groupsYaml, (err) => {
     if (err) {
       throw (err);
     }
@@ -96,19 +96,19 @@ exports.getName = function (cb) {
 };
 
 // initialize in-memory data
-exports.initDb = function (cb) {
+exports.initDb = (cb) => {
   var readSource = groupsYaml;
   if (!fileExists(groupsYaml) && fileExists(sampleGroupsYaml)) {
     console.log(`👀 No groups data found. Loading sample data. Edit ${groupsYaml} 👀`);
     readSource = sampleGroupsYaml;
   }
-  readYaml(readSource, function (err, data) {
+  readYaml(readSource, (err, data) => {
     if (err) {
       throw ('error reading sample groups yaml');
     } else {
       allGroupData = data;
       cb();
-      writeYaml(allGroupData, groupsYaml, function (err) {
+      writeYaml(allGroupData, groupsYaml, (err) => {
         if (err) {
           throw (`error writing yaml to ${groupsYaml}`);
         }

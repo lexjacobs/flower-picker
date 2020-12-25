@@ -4,22 +4,21 @@ const { getName, listGroups, setGroup } = require('../db');
 
 let tray;
 
-var quitApp = function () {
-  process.exit(0);
-};
+var quitApp = () => { process.exit(0); };
 
-var addMenubarTitle = function (text) {
+
+var addMenubarTitle = (text) => {
   tray.setTitle(text, {
     fontType: 'monospacedDigit'
   });
 };
 
-var handleGroupSelection = function (menuItem) {
+var handleGroupSelection = (menuItem) => {
   setGroup(menuItem.label);
   setNewName();
 };
 
-var buildInitialMenu = function () {
+var buildInitialMenu = () => {
   var initialMenuChoices = listGroups().map(group => {
     return { label: group, type: 'normal', click: handleGroupSelection };
   }).concat({type: 'separator'}, { label: 'quit app', type: 'normal', click: quitApp });
@@ -29,8 +28,8 @@ var buildInitialMenu = function () {
   addMenubarTitle('pick group');
 };
 
-var setNewName = function () {
-  getName(function (name) {
+var setNewName = () => {
+  getName(name => {
     var contextMenu = Menu.buildFromTemplate([
       { label: 'select new name', type: 'normal', click: setNewName },
       { type: 'separator' },
@@ -43,7 +42,7 @@ var setNewName = function () {
   });
 };
 
-exports.initTray = function () {
+exports.initTray = () => {
   tray = new Tray(path.join(__dirname, '../flower.png'), 'd3392b5f-4037-494e-b49a-48d2a80cd656');
   buildInitialMenu();
 };
