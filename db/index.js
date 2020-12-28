@@ -14,40 +14,29 @@ var fileExists = (path) => {
   return fs.existsSync(path);
 };
 
+// read .yaml file
 var readYaml = (filePath, cb) => {
-  // load from yaml into memory
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       cb(err);
     } else {
-      // return in-memory object
+      // invoke cb with safeLoaded in-memory object
       cb(null, yaml.safeLoad(data));
     }
   });
 };
 
 var writeYaml = (data, filePath, cb) => {
+  // convert in-memory data
+  // and write to .yaml file
   fs.writeFile(filePath, yaml.safeDump(data), 'utf8', (err) => {
     if (err) {
       cb(err);
-    } else {
-      cb(null, true);
     }
   });
 };
 
-var updateCount = (nextName) => {
-  var currentGroup = allGroupData.groups[activeGroup];
-  // change false to true
-  currentGroup = currentGroup.map(person => {
-    if (person.name === nextName) {
-      if (person.recentPick === false) {
-        person.recentPick = true;
-      }
-    }
-    return person;
-  });
-
+var flipPicksIfAllTrue = (currentGroup) => {
   // if everyone was recently picked, now they're all reset
   if (_.some(currentGroup, (person) => {
     return person.recentPick === false;
@@ -60,18 +49,26 @@ var updateCount = (nextName) => {
   }
 };
 
+var setRecentPick = (nextName) => {
+  var currentGroup = allGroupData.groups[activeGroup];
+  // iterate name objects and set recentPick to true
+  currentGroup = currentGroup.map(person => {
+    if (person.name === nextName) {
+      person.recentPick = true;
+    }
+    return person;
+  });
+  flipPicksIfAllTrue(currentGroup);
+};
+
 var orderSelectedStudents = () => {
   activeNameCount = 0;
-
   activeGroupData = allGroupData.groups[activeGroup].slice();
-
   let groupedData = _.groupBy(activeGroupData, (person) => {
     return person.recentPick === false;
   });
-
   // always put the students who aren't a recentPick first
   let shuffledData = _.shuffle(groupedData[true]).concat(_.shuffle(groupedData[false]));
-
   activeGroupData = shuffledData;
 };
 
@@ -86,7 +83,7 @@ exports.setGroup = (group) => {
 
 exports.getName = (cb) => {
   let nextName = activeGroupData[activeNameCount++ % activeGroupData.length].name;
-  updateCount(nextName);
+  setRecentPick(nextName);
   cb(nextName);
   writeYaml(allGroupData, groupsYaml, (err) => {
     if (err) {
@@ -115,5 +112,4 @@ exports.initDb = (cb) => {
       });
     }
   });
-
 };
