@@ -6,7 +6,6 @@ let tray;
 
 var quitApp = () => { process.exit(0); };
 
-
 var addMenubarTitle = (text) => {
   tray.setTitle(text, {
     fontType: 'monospacedDigit'

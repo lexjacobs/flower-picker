@@ -70,6 +70,7 @@ var orderSelectedStudents = () => {
   // always put the students who aren't a recentPick first
   let shuffledData = _.shuffle(groupedData[true]).concat(_.shuffle(groupedData[false]));
   activeGroupData = shuffledData;
+  console.log(`current shuffle:${activeGroupData.map(name => ` ${name.name}`)}`);
 };
 
 exports.listGroups = () => {
