@@ -3,8 +3,11 @@ const { initDb } = require('./db');
 const { initTray } = require('./views/tray');
 
 app.whenReady().then(() => {
-  initDb(() => {
-    initTray();
+  initDb((err, data) => {
+    if (err) {
+      throw(err);
+    }
+    initTray(data);
     console.log('App running in menu bar. Click to interact 🚀');
   });
 });
