@@ -85,6 +85,7 @@ class StudentGroups {
     // always put the students who aren't a recentPick first
     let shuffledData = _.shuffle(groupedData[true]).concat(_.shuffle(groupedData[false]));
     this.activeGroupData = shuffledData;
+    console.log(`current shuffle:${this.activeGroupData.map(name => ` ${name.name}`)}`);
   }
   setGroup  (group) {
     this.activeGroup = group;

@@ -2,11 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const groupsYaml = path.join(__dirname, 'groups.yaml');
-// const sampleGroupsYaml = path.join(__dirname, 'groups.sample.yaml');
-
-// var fileExists = (path) => {
-//   return fs.existsSync(path);
-// };
+const sampleGroupsYaml = path.join(__dirname, 'groups.sample.yaml');
 
 // read .yaml file
 const readYaml = (filePath, cb) => {
@@ -35,6 +31,12 @@ exports.persistData = (data, cb) => {
 };
 
 exports.initDb = (cb) => {
+
+  // if db hasn't been created, copy sample db
+  if (!fs.existsSync(groupsYaml)) {
+    fs.copyFileSync(sampleGroupsYaml, groupsYaml);
+  }
+
   readYaml(groupsYaml, (err, data) => {
     if (err) {
       cb(err);

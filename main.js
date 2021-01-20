@@ -9,5 +9,6 @@ app.whenReady().then(() => {
     }
     initTray(data);
     console.log('App running in menu bar. Click to interact 🚀');
+    console.log('edit group lists in ./db/groups.yaml');
   });
 });
