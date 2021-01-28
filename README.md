@@ -46,3 +46,9 @@ A: A shuffled order is created after you select a group. Names that have not bee
 Q: Where do I edit my group lists?
 
 A: in `db/cohorts.yaml` . The first time you start the app, if you haven't added a group list, one will be automatically generated from `db/cohorts.sample.yaml` and saved as `db/cohorts.yaml`. This file is in `.gitignore` for privacy.
+
+### Protips!
+
+- Clone this repo into dropbox (or symlink `db/cohorts.yaml` into dropbox) and you will be able to sync your pick status across different computers
+- Make an alias for easy launching! Here's mine: `alias picker="npm run --prefix ~/Dropbox/code/flower-picker/ start"` 
+
