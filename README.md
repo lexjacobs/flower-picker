@@ -49,6 +49,6 @@ A: in `db/cohorts.yaml` . The first time you start the app, if you haven't added
 
 ### Protips!
 
-- Clone this repo into dropbox (or symlink `db/cohorts.yaml` into dropbox) and you will be able to sync your pick status across different computers
+- Clone this repo into dropbox (or put `cohorts.yaml` into dropbox and symlink it to `db/cohorts.yaml`) and you will be able to sync your pick status across different computers
 - Make an alias for easy launching! Here's mine: `alias picker="npm run --prefix ~/Dropbox/code/flower-picker/ start"` 
 
